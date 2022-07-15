@@ -17,11 +17,17 @@ app.get("/", function (req, res) {
 
 
 // your first API endpoint... 
-app.get("/api/:ts", function (req, res) {
+app.get("/api/:ts?", function (req, res) {
   let result;
   let datePattern = new RegExp(/[0-9]{4}-[0-1]{1}[0-9]{1}-[0-9]{2}/);
   let d = req.params.ts
+  console.log(d)
 
+  if(!d){
+    d = Date.now()
+    d = new Date(d)
+    result = {unix: d.getTime(), utc: d.toUTCString() }
+  }
   // is a timestamp
   if( !isNaN(req.params.ts) ){
     d = new Date(parseInt(d))
@@ -29,6 +35,10 @@ app.get("/api/:ts", function (req, res) {
   }
   // is a date with YYYY-MM-DD format
   else if( datePattern.test(req.params.ts) ){
+    d = new Date(d)
+    result = {unix: d.getTime(), utc: d.toUTCString() }
+  }
+  else if( new Date(d) !== "Invalid Date" ){
     d = new Date(d)
     result = {unix: d.getTime(), utc: d.toUTCString() }
   }
