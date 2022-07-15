@@ -20,6 +20,8 @@ app.get("/", function (req, res) {
 app.get("/api/:ts?", function (req, res) {
   let result;
   let datePattern = new RegExp(/[0-9]{4}-[0-1]{1}[0-9]{1}-[0-9]{2}/);
+  let datePattern2 = new RegExp(/[\d]{2} [Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec]+ [\d]{4}/);
+  let datePattern3 = new RegExp(/[Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec]+ [\d]{2} [\d]{4}/);
   let d = req.params.ts
   console.log(d)
 
@@ -29,16 +31,16 @@ app.get("/api/:ts?", function (req, res) {
     result = {unix: d.getTime(), utc: d.toUTCString() }
   }
   // is a timestamp
-  if( !isNaN(req.params.ts) ){
+  else if( !isNaN(req.params.ts) ){
     d = new Date(parseInt(d))
     result = {unix: d.getTime(), utc: d.toUTCString() }
   }
-  // is a date with YYYY-MM-DD format
-  else if( datePattern.test(req.params.ts) ){
-    d = new Date(d)
-    result = {unix: d.getTime(), utc: d.toUTCString() }
-  }
-  else if( new Date(d) !== "Invalid Date" ){
+  // is a date with most common Javascript date formats
+  else if(
+    datePattern.test(req.params.ts)
+    || datePattern2.test(req.params.ts)
+    || datePattern3.test(req.params.ts)
+  ){
     d = new Date(d)
     result = {unix: d.getTime(), utc: d.toUTCString() }
   }
