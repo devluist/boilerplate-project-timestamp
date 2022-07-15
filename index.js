@@ -1,7 +1,4 @@
 // index.js
-// where your node app starts
-
-// init project
 var express = require('express');
 var app = express();
 
@@ -20,8 +17,27 @@ app.get("/", function (req, res) {
 
 
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+app.get("/api/:ts", function (req, res) {
+  let result;
+  let datePattern = new RegExp(/[0-9]{4}-[0-1]{1}[0-9]{1}-[0-9]{2}/);
+  let d = req.params.ts
+
+  // is a timestamp
+  if( !isNaN(req.params.ts) ){
+    d = new Date(parseInt(d))
+    result = {unix: d.getTime(), utc: d.toUTCString() }
+  }
+  // is a date with YYYY-MM-DD format
+  else if( datePattern.test(req.params.ts) ){
+    d = new Date(d)
+    result = {unix: d.getTime(), utc: d.toUTCString() }
+  }
+  // wrong input type
+  else {
+    result = {error: "Invalid Date"}  
+  }
+
+  res.json(result);
 });
 
 
